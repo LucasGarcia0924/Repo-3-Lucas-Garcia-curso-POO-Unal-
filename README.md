@@ -160,6 +160,7 @@ classDiagram
 ```
 De manera específica, podemos ver en python las clases de la siguiente forma:
 ### Items del Menú
+Aquí se tiene la clase Item del menú, la cual posee los atributos "nombre" y "precio"y posee 2 métodos, imprimirse colocando el nombre y el precio en pesos colombianos, y calcular el total por el tipo de item, multiplicando el precio por la cantidad escogida de este mismo.
 ```python
 class MenuItem:
     def __init__(self, name: str, price: float):
@@ -173,8 +174,12 @@ class MenuItem:
         return f"{self.name} - ${self.price:,.0f} COP"
 ```
 #### Sus clases hijas
+Todas estas heredan los atributos y métodos de la clase anterior, pero agregan un nuevo atributo, diferente para cada clase hija, y el dunder str imprime junto al nombre y precio, dicho atributo, estos son:
+- Bebida: Tamaño
+- Entrada: Porción
+- Plato principal: Si es vegatariano
+- Postre: Que tan dulce es
 ```python
-
 class Beverage(MenuItem):
     def __init__(self, name: str, price: float, size: str):
         super().__init__(name, price)
@@ -212,6 +217,7 @@ class Dessert(MenuItem):
         return f"{self.name} [Dulzura: {self.sweet_level}] - ${self.price:,.0f} COP"
 ```
 ### Orden realizada
+Y todas las clases anteriores, componen a la clase orden, la cuál se inicializa con una lista en la que van los artículos con su precio, tiene el método de agregar un nuevo item a la lista, calcular el total de la orden sumando el total de cada artículo y agregando un descuento del 10% si se pasa de 150.000 pesos, y por último imprimirse como la factura que lee el usuario/cliente.
 ```python
 class Order:
     def __init__(self):
