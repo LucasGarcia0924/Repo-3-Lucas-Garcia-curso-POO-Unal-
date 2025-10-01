@@ -1,4 +1,4 @@
-# Repo-3-Lucas-Garcia-curso-POO-Unal-
+# Reto 3 POO
 Para el tercer reto se llevan a cabo 3 actividades, la primera es modelar la clase de un rectángulo, luego la de una línea, y finalmente realizar el diagrama de clases y programación de un menú y la tarifa de cobro a un cliente.
 ***
 ## Logo del grupo
@@ -112,20 +112,127 @@ Se despeja de la ecuación general de una recta para hallar los intersectos, per
 ```
 ***
 ## Escenario de Restaurante
+En el diagrama de clases podemos ver la clase original "Orden", la cual contiene Items, que provienen de la clase "Menu Item" y que a la vez se divide en "Entradas", "Plato principal", "Bebidas" y "Postres", todos tienen función dunder str para imprimir objetos y todos tienen sus atributos únicos o compartidos cómo:
+- Precio
+- Porción
+- Si es vegetariano
 ```mermaid
 classDiagram
-Usuarios <|-- Administradores
-class Usuarios{
-      +string id
-      +string contraseña
-}
-    class Administradores{
-      +agregar un libro(catálogo)
-      +remover un libro(catálogo)
-      +procesar devolución(catálogo)
+    class MenuItem {
+        - name: str
+        - price: float
+        + calculate_total(quantity: int)
+        + __str__()
     }
-```
 
+    class Beverage {
+        - size: str
+        + __str__()
+    }
+
+    class Appetizer {
+        - portion: str
+        + __str__()
+    }
+
+    class MainCourse {
+        - is_vegetarian: bool
+        + __str__()
+    }
+
+    class Dessert {
+        - sweet_level: str
+        + __str__()
+    }
+
+    class Order {
+        - items: list
+        + add_item(item: MenuItem, quantity: int)
+        + calculate_total()
+        + __str__()
+    }
+
+    MenuItem <|-- Beverage
+    MenuItem <|-- Appetizer
+    MenuItem <|-- MainCourse
+    MenuItem <|-- Dessert
+    Order --> MenuItem
+```
+De manera específica, podemos ver en python las clases de la siguiente forma:
+### Items del Menú
+```python
+class MenuItem:
+    def __init__(self, name: str, price: float):
+        self.name = name
+        self.price = price
+
+    def calculate_total(self, quantity: int = 1) -> float:
+        return self.price * quantity
+
+    def __str__(self) -> str:
+        return f"{self.name} - ${self.price:,.0f} COP"
+```
+#### Sus clases hijas
 ```python
 
+class Beverage(MenuItem):
+    def __init__(self, name: str, price: float, size: str):
+        super().__init__(name, price)
+        self.size = size
+
+    def __str__(self) -> str:
+        return f"{self.name} ({self.size}) - ${self.price:,.0f} COP"
+
+
+class Appetizer(MenuItem):
+    def __init__(self, name: str, price: float, portion: str):
+        super().__init__(name, price)
+        self.portion = portion
+
+    def __str__(self) -> str:
+        return f"{self.name} [{self.portion}] - ${self.price:,.0f} COP"
+
+
+class MainCourse(MenuItem):
+    def __init__(self, name: str, price: float, is_vegetarian: bool = False):
+        super().__init__(name, price)
+        self.is_vegetarian = is_vegetarian
+
+    def __str__(self) -> str:
+        veg = " (Vegetariano)" if self.is_vegetarian else ""
+        return f"{self.name}{veg} - ${self.price:,.0f} COP"
+
+
+class Dessert(MenuItem):
+    def __init__(self, name: str, price: float, sweet_level: str = "Medio"):
+        super().__init__(name, price)
+        self.sweet_level = sweet_level
+
+    def __str__(self) -> str:
+        return f"{self.name} [Dulzura: {self.sweet_level}] - ${self.price:,.0f} COP"
 ```
+### Orden realizada
+```python
+class Order:
+    def __init__(self):
+        self.items: list[tuple[MenuItem, int]] = []
+
+    def add_item(self, item: MenuItem, quantity: int = 1):
+        self.items.append((item, quantity))
+
+    def calculate_total(self) -> float:
+        total = sum(item.calculate_total(qty) for item, qty in self.items)
+        # Descuento: 10% si la orden supera 150.000 COP
+        if total > 150000:
+            total *= 0.9
+        return total
+
+    def __str__(self) -> str:
+        details = "Orden del cliente:\n"
+        for item, qty in self.items:
+            details += f"{qty} x {item} = ${item.calculate_total(qty):,.0f} COP\n"
+        details += f"TOTAL: ${self.calculate_total():,.0f} COP\n"
+        return details
+```
+***
+Finalmente, en la sección de archivos hay 2 programas para probar el código y hacer tus figuras y ordenes deseadas.
